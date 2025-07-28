@@ -1,0 +1,23 @@
+# Environments
+.env
+.env.*
+!/.env.example
+
+# Dependencies
+/node_modules
+/bower_components
+
+# Build artifacts
+/build
+/dist
+/out
+
+# Executables
+*.exe
+*.dll
+*.so
+*.a
+
+# Other
+.DS_Store
+임시/
