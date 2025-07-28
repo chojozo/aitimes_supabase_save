@@ -16,37 +16,29 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.x'
 
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install supabase
+      run: pip install -r requirements.txt
 
-    - name: Install Chrome and ChromeDriver 114
+    - name: Install Chrome & ChromeDriver 114
       run: |
         sudo apt-get update
         sudo apt-get install -y wget unzip curl
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
 
-        # ChromeDriver 114 설치
+        # Install Chrome 114
+        wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.133-1_amd64.deb
+        sudo dpkg -i google-chrome*.deb || sudo apt-get -f install -y
+
+        # Install ChromeDriver 114
         wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
         chmod +x /usr/local/bin/chromedriver
 
-        # 버전 확인
+        # Debug print
         google-chrome --version
         chromedriver --version
 
     - name: Run crawler
       run: python aitimes_crawler.py
-
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      SMTP_USER: ${{ secrets.SMTP_USER }}
-      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-      RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
