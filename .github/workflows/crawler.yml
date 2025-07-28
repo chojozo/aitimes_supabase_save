@@ -1,0 +1,24 @@
+name: Daily Crawler
+
+on:
+  schedule:
+    - cron: '0 23 * * *' # KST 8 AM (UTC 23:00)
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x' # Use the appropriate Python version
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run crawler
+      run: python aitimes_crawler.py
