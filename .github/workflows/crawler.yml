@@ -24,20 +24,22 @@ jobs:
         pip install -r requirements.txt
         pip install supabase
 
-    - name: Install Chrome and ChromeDriver (ver 114)
+    - name: Install Chrome and ChromeDriver 114
       run: |
         sudo apt-get update
-        sudo apt-get install -y unzip wget curl gnupg libnss3 libxss1 libappindicator3-1 fonts-liberation libu2f-udev
+        sudo apt-get install -y wget unzip curl
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
 
-        # 명확한 버전의 ChromeDriver 설치 (v114)
+        # ChromeDriver 114 설치
         wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
         chmod +x /usr/local/bin/chromedriver
-        chromedriver --version
 
+        # 버전 확인
+        google-chrome --version
+        chromedriver --version
 
     - name: Run crawler
       run: python aitimes_crawler.py
