@@ -21,7 +21,6 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
 
-    ✅ **이제 환경 변수 먼저 설정**
     - name: Set up environment variables
       run: |
         echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> $GITHUB_ENV
@@ -54,6 +53,5 @@ jobs:
         google-chrome --version || true
         chromedriver --version || true
 
-    ✅ 마지막으로 Python 실행
     - name: Run crawler
       run: python aitimes_crawler.py
