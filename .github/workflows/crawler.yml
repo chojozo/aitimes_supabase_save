@@ -3,7 +3,7 @@ name: Daily Crawler
 on:
   schedule:
     - cron: '0 23 * * *' # KST 8 AM (UTC 23:00)
-  workflow_dispatch: # This line allows manual triggering
+  workflow_dispatch:
 
 jobs:
   crawl:
@@ -16,10 +16,25 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.x' # Use the appropriate Python version
+        python-version: '3.11'  # 명확한 버전 지정 권장
 
     - name: Install dependencies
-      run: pip install -r requirements.txt
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install supabase  # 안전하게 한 번 더
+
+    - name: Install ChromeDriver
+      uses: nanasess/setup-chromedriver@v2
+      with:
+        chromedriver-version: 'latest'
 
     - name: Run crawler
       run: python aitimes_crawler.py
+
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
