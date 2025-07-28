@@ -29,27 +29,30 @@ jobs:
         echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> $GITHUB_ENV
         echo "RECIPIENT_EMAIL=${{ secrets.RECIPIENT_EMAIL }}" >> $GITHUB_ENV
 
-    - name: Install Chrome 114 and matching ChromeDriver
+    - name: Install Chrome and matching ChromeDriver
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget unzip curl gnupg2
+        sudo apt-get install -y wget unzip curl gnupg2 jq
 
-        # 구버전 크롬 설치를 위한 PPA 등록
+        # 최신 Chrome 설치
         wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
         echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-
         sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
 
-        # 크롬 114 강제 설치
-        sudo apt-get install -y google-chrome-stable=114.0.5735.133-1 || echo "Chrome 114 강제 설치 실패: 수동 다운로드 필요할 수 있음"
+        # Chrome 버전에 맞는 ChromeDriver 자동 다운로드
+        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -n1)
+        echo "Detected Chrome version: $CHROME_VERSION"
 
-        # 크롬드라이버 114 수동 설치
-        wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
-        unzip chromedriver_linux64.zip
-        sudo mv chromedriver /usr/local/bin/
-        chmod +x /usr/local/bin/chromedriver
+        CHROMEDRIVER_URL=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | jq -r ".channels.Stable.downloads.chromedriver[] | select(.platform == \"linux64\") | select(.url | test(\"$CHROME_VERSION\")) | .url")
 
-        # 버전 확인
+        echo "Downloading matching ChromeDriver from: $CHROMEDRIVER_URL"
+        curl -o chromedriver.zip "$CHROMEDRIVER_URL"
+        unzip chromedriver.zip
+        sudo mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
+        sudo chmod +x /usr/local/bin/chromedriver
+
+        # 확인
         google-chrome --version || true
         chromedriver --version || true
 
