@@ -21,6 +21,15 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
 
+    ✅ **이제 환경 변수 먼저 설정**
+    - name: Set up environment variables
+      run: |
+        echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> $GITHUB_ENV
+        echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> $GITHUB_ENV
+        echo "SMTP_USER=${{ secrets.SMTP_USER }}" >> $GITHUB_ENV
+        echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> $GITHUB_ENV
+        echo "RECIPIENT_EMAIL=${{ secrets.RECIPIENT_EMAIL }}" >> $GITHUB_ENV
+
     - name: Install Chrome 114 and matching ChromeDriver
       run: |
         sudo apt-get update
@@ -45,5 +54,6 @@ jobs:
         google-chrome --version || true
         chromedriver --version || true
 
+    ✅ 마지막으로 Python 실행
     - name: Run crawler
       run: python aitimes_crawler.py
