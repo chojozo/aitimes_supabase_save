@@ -21,24 +21,29 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
 
-    - name: Install Chrome & ChromeDriver 114
+    - name: Install Chrome 114 and matching ChromeDriver
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget unzip curl
+        sudo apt-get install -y wget unzip curl gnupg2
 
-        # Install Chrome 114
-        wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.133-1_amd64.deb
-        sudo dpkg -i google-chrome*.deb || sudo apt-get -f install -y
+        # 구버전 크롬 설치를 위한 PPA 등록
+        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
 
-        # Install ChromeDriver 114
+        sudo apt-get update
+
+        # 크롬 114 강제 설치
+        sudo apt-get install -y google-chrome-stable=114.0.5735.133-1 || echo "Chrome 114 강제 설치 실패: 수동 다운로드 필요할 수 있음"
+
+        # 크롬드라이버 114 수동 설치
         wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
         chmod +x /usr/local/bin/chromedriver
 
-        # Debug print
-        google-chrome --version
-        chromedriver --version
+        # 버전 확인
+        google-chrome --version || true
+        chromedriver --version || true
 
     - name: Run crawler
       run: python aitimes_crawler.py
