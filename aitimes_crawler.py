@@ -166,7 +166,8 @@ def crawl_aitimes():
                                 'link': link,
                                 'summary': re.sub(r'[\n]+', ' ', lead_tag.get_text(strip=True)),
                                 'published_at': article_date.isoformat(),
-                                'full_content': full_content # 본문 추가
+                                'full_content': full_content, # 본문 추가
+                                'source': 'AI TIMES' # source 추가
                             })
                 except ValueError:
                     continue
